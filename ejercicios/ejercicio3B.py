@@ -1,35 +1,43 @@
-from common import aws_resource_functions as aws
-import boto3
-import time
+from common.aws_resource_class import AWS
 
-# Nombres de las instancias y grupos de seguridad a eliminar.
-nombres_instancias = ['frontend-1', 'frontend-2', 'backend', 'balanceador', 'nfs']
-nombres_sg = ['frontend-sg', 'frontend-sg', 'backend-sg', 'balanceador-sg', 'nfs-sg']
+# Creamos el objeto AWS
+aws = AWS()
 
-# Desvincular y liberar las IPs elásticas asociadas a las instancias.
-for nombre_instancia in nombres_instancias:
-    id_instancia = aws.get_instance_id(nombre_instancia)
-    if id_instancia:
-        public_ip = aws.get_instance_public_ip(id_instancia)
-        if public_ip:
-            aws.disassociate_elastic_ip(public_ip)
-            aws.release_elastic_ip(public_ip)
+#Variables instancias
+instance_name = ["frontend-1", 
+                 "frontend-2", 
+                 "balanceador", 
+                 "backend", 
+                 "nfs"]
 
-# Terminar las instancias por su ID.
-for nombre_instancia in nombres_instancias:
-    id_instancia = aws.get_instance_id(nombre_instancia)
-    if id_instancia:
-        aws.terminate_instance_by_id(id_instancia)
+# Eliminar IPs
+def delete_IP(instance_name):
+    try:
+        instance_id = aws.get_instance_id(instance_name)
+        elastic_ip = aws.get_instance_public_ip(instance_id)
+        aws.release_elastic_ip(elastic_ip)
+    except:
+        print("No se ha encontrado una IP para borrar")
 
-# Esperar hasta que las instancias estén terminadas.
-ec2 = boto3.resource('ec2')
-for nombre_instancia in nombres_instancias:
-    id_instancia = aws.get_instance_id(nombre_instancia)
-    if id_instancia:
-        instance = ec2.Instance(id_instancia)
-        instance.wait_until_terminated()
-        
-# Eliminar los grupos de seguridad por su nombre.
-for nombre_sg in nombres_sg:
-    if aws.security_group_exists(nombre_sg):
-        aws.delete_security_group(nombre_sg)
+for i in range(len(instance_name)):
+    delete_IP(instance_name[i])
+
+# Eliminar instancias
+def delete_instances(instance_name):
+    aws.terminate_instance(instance_name)
+
+for i in range(len(instance_name)):
+    delete_instances(instance_name[i])
+
+#Variables grupos de seguridad
+sg_name = ["frontend-sg", 
+           "backend-sg", 
+           "balanceador-sg", 
+           "nfs-sg"]
+
+# Eliminar grupos de seguridad
+def delete_sg(sg_name):
+    aws.delete_security_group(sg_name)
+
+for i in range(len(sg_name)):
+    delete_sg(sg_name[i])
