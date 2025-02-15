@@ -50,7 +50,7 @@ aws.list_instances()
 ```
 # Ejercicio2
 ![](capturas/ejercicio2py.png)
-# Ejercicio3
+# Ejercicio3A
 ![](capturas/ejercicio3py.png)
-# Ejercicio4
+# Ejercicio4B
 ![](capturas/ejercicio4py.png)
