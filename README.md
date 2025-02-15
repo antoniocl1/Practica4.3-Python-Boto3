@@ -167,3 +167,4 @@ for i in range(len(sg_name)):
     delete_sg(sg_name[i])
 ```
 ![](capturas/ejercicio4py.png)
+**El error que nos da pasa después de ejecutar muchas veces el script, supongo que al AWS le cuesta procesar todas las creaciones y borrados que estoy haciendo y se queda un poco pillado**
